@@ -1,0 +1,45 @@
+version: "3.5"
+
+# make sure that docker machine has enough memory to run the cluster.
+# setting it up to 4GB seems to work.
+
+services:
+
+  cassandra1:
+    #build: ./
+    image: cassandra:4.1.0
+    mem_limit: 2g
+    ports:
+       - "9042:9042"
+       - "7001:7001"
+       - "7199:7199"   
+       - "9160:9160"  
+    volumes:
+      - "cassandra_data_main:/var/lib/cassandra"
+      - ./scripts:/docker-entrypoint-initdb.d
+    environment:
+      - "CASSANDRA_SEEDS=cassandra1"
+      - "CASSANDRA_CLUSTER_NAME=Test Cluster"
+#      needed for setting up custom cluster name
+      - "CASSANDRA_DC=se1"
+      - "CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch"
+    restart: always
+
+
+  cassandra-init:
+    image: cassandra:4.1.0
+    environment:
+      - CASSANDRA_SEEDS=cassandra-main
+      - CASSANDRA_CLUSTER_NAME=Test Cluster
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+    entrypoint: "sh -c 'while ! cqlsh cassandra1 -e \"describe cluster\" > /dev/null 2>&1; do sleep 6; done && cqlsh cassandra1 -f /docker-entrypoint-initdb.d/init_keyspace.cql && echo \"init compelet\" '"
+
+networks:
+  default:
+    name: cassandra-docker
+    external: true
+
+
+volumes:
+  cassandra_data_main:
