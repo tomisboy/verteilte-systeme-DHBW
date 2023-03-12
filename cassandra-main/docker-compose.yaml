@@ -12,6 +12,7 @@ services:
     ports:
        - "9042:9042"
        - "7001:7001"
+       - "7000:7000"
        - "7199:7199"   
        - "9160:9160"  
     volumes:
@@ -29,7 +30,7 @@ services:
   cassandra-init:
     image: cassandra:4.1.0
     environment:
-      - CASSANDRA_SEEDS=cassandra-main
+      - CASSANDRA_SEEDS=cassandra1
       - CASSANDRA_CLUSTER_NAME=Test Cluster
     volumes:
       - ./scripts:/docker-entrypoint-initdb.d
