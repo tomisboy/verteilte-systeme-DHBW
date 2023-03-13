@@ -5,10 +5,10 @@ version: "3.5"
 
 services:
 
-
   cassandra2:
     image: cassandra:4.1.0
     mem_limit: 2g
+    container_name: cassandra
     volumes:
       - "cassandra_data_2:/var/lib/cassandra"
     environment:
@@ -18,7 +18,6 @@ services:
 #      needed for setting up custom cluster name
       - "CASSANDRA_DC=se1"
       - "CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch"
-## Port nur für Public 
     ports:
        - "9042:9042"
        - "7001:7001"
@@ -28,12 +27,6 @@ services:
     restart: always
 
 
-
-networks:
-  default:
-    name: cassandra-docker
-    external: true
-
 volumes:
   cassandra_data_2:
-  cassandra_data_3:
+
