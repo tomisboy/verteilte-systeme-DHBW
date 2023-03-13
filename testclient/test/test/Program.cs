@@ -12,7 +12,7 @@ class Program
         
         // Cassandra Cluster und Session erstellen
         // Cluster cluster = Cluster.Builder().AddContactPoint("localhost").Build();
-        Cluster cluster = Cluster.Builder().AddContactPoint("193.196.55.166").Build();
+        Cluster cluster = Cluster.Builder().AddContactPoint("193.196.54.176").Build();
         //Cluster cluster = Cluster.Builder().AddContactPoint("cassandra").Build();
         ISession session = cluster.Connect("vs2");
 
@@ -20,10 +20,10 @@ class Program
         var insertStatement = session.Prepare("INSERT INTO test (name, password) VALUES (?, ?)");
 
         // 100 verschiedene Datensätze als SQL-Statements hinzufügen
-        for (int i = 1; i < 999;  i++)
+        for (int i = 1; i < 9;  i++)
         {
             // Parameterwerte setzen
-            var statement = insertStatement.Bind("i"+i, "password-to3" + i);
+            var statement = insertStatement.Bind("aaa"+i, "password-to3" + i +result);
 
             // Statement ausführen
             session.Execute(statement);  
@@ -31,19 +31,19 @@ class Program
             
         }
 
-        var json = JsonConvert.SerializeObject(new
-             {
-                 isbn = "123456"+ result,
-                 title = "titel" + result,
-                 publisher = "pup" + result
-             });
-            
-             // Erstellen Sie eine CQL-Anweisung zum Einfügen der JSON in eine Tabelle
-             var cql = "INSERT INTO books JSON ?";
-             var jsonstatement = session.Prepare(cql).Bind(json);
-            
-             // Führen Sie die Anweisung aus
-             session.Execute(jsonstatement);
+       // var json = JsonConvert.SerializeObject(new
+       //      {
+       //          isbn = "123456"+ result,
+       //          title = "titel" + result,
+       //          publisher = "pup" + result
+       //      });
+       //     
+       //      // Erstellen Sie eine CQL-Anweisung zum Einfügen der JSON in eine Tabelle
+       //      var cql = "INSERT INTO books JSON ?";
+       //      var jsonstatement = session.Prepare(cql).Bind(json);
+       //     
+       //      // Führen Sie die Anweisung aus
+       //      session.Execute(jsonstatement);
         
         // Verbindung schließen
         session.Dispose();

@@ -23,7 +23,7 @@ services:
 ##  muss dieser neue Node neu installiert werden und den alten Node mit der selben IP Adress ersetzen.
 ##  Dabei muss die ENV JVM_EXTRA_OPTS bei erstmaligem start gesetzt werden. 
 #
-#      - "JVM_EXTRA_OPTS=-Dcassandra.replace_address_first_boot=192.168.0.12"
+#      - "JVM_EXTRA_OPTS=-Dcassandra.replace_address_first_boot=192.168.0.11 -Dcassandra.allow_unsafe_replace=true"
 
 
 
