@@ -12,8 +12,8 @@ services:
     volumes:
       - "cassandra_data_2:/var/lib/cassandra"
     environment:
-      - "CASSANDRA_BROADCAST_ADDRESS=193.196.53.217"
-      - "CASSANDRA_SEEDS=193.196.55.166"
+      - "CASSANDRA_BROADCAST_ADDRESS=192.168.0.12"
+      - "CASSANDRA_SEEDS=192.168.0.11"
       - "CASSANDRA_CLUSTER_NAME=Test Cluster"
 #      needed for setting up custom cluster name
       - "CASSANDRA_DC=se1"
