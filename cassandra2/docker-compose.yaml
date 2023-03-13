@@ -1,8 +1,5 @@
 version: "3.5"
 
-# make sure that docker machine has enough memory to run the cluster.
-# setting it up to 4GB seems to work.
-
 services:
 
   cassandra2:
@@ -13,11 +10,21 @@ services:
       - "cassandra_data_2:/var/lib/cassandra"
     environment:
       - "CASSANDRA_BROADCAST_ADDRESS=192.168.0.12"
-      - "CASSANDRA_SEEDS=192.168.0.11"
+      - "CASSANDRA_SEEDS=192.168.0.11,192.168.0.12,192.168.0.13"
       - "CASSANDRA_CLUSTER_NAME=Test Cluster"
-#      needed for setting up custom cluster name
       - "CASSANDRA_DC=se1"
       - "CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch"
+
+##  Replace Node: 
+##  Diese ENV ist zu setzen wenn Node zerstört wurde.
+##  Sind alle Daten auf dem alten Nodes verloren, 
+##  muss dieser neue Node neu installiert werden und den alten Node mit der selben IP Adress ersetzen.
+##  Dabei muss die ENV JVM_EXTRA_OPTS bei erstmaligem start gesetzt werden. 
+#
+#      - "JVM_EXTRA_OPTS=-Dcassandra.replace_address_first_boot=192.168.0.12"
+
+
+
     ports:
        - "9042:9042"
        - "7001:7001"
