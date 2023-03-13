@@ -36,7 +36,7 @@ services:
       - CASSANDRA_CLUSTER_NAME=Test Cluster
     volumes:
       - ./scripts:/docker-entrypoint-initdb.d
-    entrypoint: "sh -c 'while ! cqlsh cassandra1 -e \"describe cluster\" > /dev/null 2>&1; do sleep 6; done && cqlsh cassandra1 -f /docker-entrypoint-initdb.d/init_keyspace.cql && echo \"init compelet\" '"
+    entrypoint: "sh -c 'while ! cqlsh cassandra -e \"describe cluster\" > /dev/null 2>&1; do sleep 6; done && cqlsh cassandra -f /docker-entrypoint-initdb.d/init_keyspace.cql && echo \"init compelet\" '"
 
 networks:
   default:
