@@ -11,7 +11,8 @@ class Program
         
         // Cassandra Cluster und Session erstellen
         // Cluster cluster = Cluster.Builder().AddContactPoint("localhost").Build();
-        Cluster cluster = Cluster.Builder().AddContactPoint("193.196.55.166").Build();
+        // Cluster cluster = Cluster.Builder().AddContactPoint("193.196.55.166").Build();
+        Cluster cluster = Cluster.Builder().AddContactPoint("cassandra").Build();
         ISession session = cluster.Connect("vs2");
 
         // Insert-Statement vorbereiten
