@@ -7,7 +7,7 @@ class Program
         // Cassandra Cluster und Session erstellen
         // Cluster cluster = Cluster.Builder().AddContactPoint("localhost").Build();
         Cluster cluster = Cluster.Builder().AddContactPoint("193.196.55.166").Build();
-        ISession session = cluster.Connect("vs");
+        ISession session = cluster.Connect("vs2");
 
         // Insert-Statement vorbereiten
         var insertStatement = session.Prepare("INSERT INTO test (name, password) VALUES (?, ?)");
@@ -16,7 +16,7 @@ class Program
         for (int i = 1; i <= 20;  i++)
         {
             // Parameterwerte setzen
-            var statement = insertStatement.Bind("value" + i, "password" + i);
+            var statement = insertStatement.Bind("tot" + i, "password-to3" + i);
 
             // Statement ausführen
             session.Execute(statement);
