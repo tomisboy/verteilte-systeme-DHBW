@@ -18,7 +18,7 @@ services:
 #      needed for setting up custom cluster name
       - "CASSANDRA_DC=se1"
       - "CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch"
-      - "CASSANDRA_REPLACE_ADDRESS=193.196.54.176"
+      - "CASSANDRA_REPLACE_ADDRESS=192.168.0.13"
 ## Port nur für Public 
     ports:
        - "9042:9042"
