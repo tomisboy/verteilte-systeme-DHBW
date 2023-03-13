@@ -26,6 +26,10 @@ services:
        - "9160:9160"
     restart: always
 
+networks:
+  default:
+    name: cassandra-docker
+    external: true
 
 volumes:
   cassandra_data_2:
