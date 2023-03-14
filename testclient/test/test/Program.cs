@@ -16,21 +16,46 @@ class Program
         //Cluster cluster = Cluster.Builder().AddContactPoint("cassandra").Build();
         ISession session = cluster.Connect("vs2");
 
-        // Insert-Statement vorbereiten
-        var insertStatement = session.Prepare("INSERT INTO test (name, password) VALUES (?, ?)");
+       //// Insert-Statement vorbereiten
+       //var insertStatement = session.Prepare("INSERT INTO test (name, password) VALUES (?, ?)");
+       //
+       //// 100 verschiedene Datensätze als SQL-Statements hinzufügen
+       //for (int i = 1; i <= 1;  i++)
+       //{
+       //    // Parameterwerte setzen
+       //    var statement = insertStatement.Bind("init", "altered" + i +result);
 
-        // 100 verschiedene Datensätze als SQL-Statements hinzufügen
-        for (int i = 1; i < 9;  i++)
-        {
-            // Parameterwerte setzen
-            var statement = insertStatement.Bind("aaa"+i, "password-to3" + i +result);
+       //    // Statement ausführen
+       //    session.Execute(statement);
+       //}
+       
+       int insert = 0;
+       if (insert == 1)
+       {
+           Console.WriteLine("insert");
+           var insertStatement = session.Prepare("INSERT INTO test (name, password) VALUES (?, ?)");
+       
+           //    // Parameterwerte setzen
+           var statement = insertStatement.Bind("init", "altered-" + result);
+       
+           //    // Statement ausführen
+           session.Execute(statement);
+       
+       }
+       else
+       {
+           Console.WriteLine("update");
+           var updateStatement = session.Prepare("UPDATE test SET password = ? WHERE name = ?");
+       
+           // the parameters to the statement
+           var alteredPassword = "altered-"+result;
+           var name = "init";
+           session.Execute(updateStatement.Bind(alteredPassword, name));
+       
+       }
 
-            // Statement ausführen
-            session.Execute(statement);  
-            
-            
-        }
-
+      
+      
        // var json = JsonConvert.SerializeObject(new
        //      {
        //          isbn = "123456"+ result,
