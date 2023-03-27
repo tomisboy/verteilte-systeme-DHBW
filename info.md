@@ -29,3 +29,12 @@ Wenn Sie also zwei Knoten verlieren, können Schreibvorgänge nicht mehr erfolgr
 --> wenn nur ein Datensatz vorhanden ist, wird die konsistenz automatisch wiederhergestellt
 der ausgefalle node hat nicht immer die neuen Daten und startet leer
 wenn der datensatz auf den node der noch da ist geupdatet wird, schreibt es die daten wieder in die db auf ALLE nodes dann passts wieder.
+
+
+
+---
+
+
+
+Testszenario:
+
