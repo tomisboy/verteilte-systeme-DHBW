@@ -29,6 +29,9 @@ public class Logger
         
     public static void TcpInMessage(string? message)
     {
+        if(!IsDebugEnabled)
+            return;
+
         LogToConsole("[TCP:in] " + message, ConsoleColor.DarkCyan);
     }
     
