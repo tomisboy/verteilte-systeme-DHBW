@@ -10,6 +10,7 @@ public class Client
     #region Fields
     
     private const int RequestDelay = 20;
+    private const int MaxRequestPerNode = Program.maxAreaX / 3;
 
     private const int TimeToCheckResponse = 10;
     private const int TimeToCheckServer = 100;
@@ -24,21 +25,24 @@ public class Client
     private DateTime _start;
 
     private int ID = -1;
-
+    private int requestCount = 1;
+    
     #endregion
     
     #region Constructors
 
     public Client(short maxX, short maxY, int id)
     {
-        var r = new Random();
-        
-        _start = DateTime.Now;
-        _serverIps = File.ReadAllLines("ips.txt").ToList();
-        _currentPos = new Coordinate((short) r.Next(maxX), (short) r.Next(maxY));
-        _targetPos = new Coordinate((short) r.Next(maxX), (short) r.Next(maxY));
-
-        ID = id;
+        lock (Program.random)
+        {
+           var r = Program.random; 
+           _start = DateTime.Now;
+           _serverIps = File.ReadAllLines("ips.txt").ToList();
+           _currentPos = new Coordinate((short) r.Next(maxX), (short) r.Next(maxY));
+           _targetPos = new Coordinate((short) r.Next(maxX), (short) r.Next(maxY));
+   
+           ID = id; 
+        }
     }
 
     #endregion
@@ -92,11 +96,16 @@ public class Client
 
             return await ListenToSocket(socket, force);
         }
+        catch (SocketOverloadException)
+        {
+            throw new SocketOverloadException();
+        }
         catch
         {
             Logger.ErrorMessage($"Can't connect to {ip} lost");
             throw new SocketException();
         }
+        
     }
 
     private async Task<bool> ListenToSocket(Socket socket, bool force)
@@ -133,15 +142,28 @@ public class Client
 
                     if (answerPos.X == _targetPos.X && answerPos.Y == _targetPos.Y)
                     {
-                        Logger.HighlightMessage($"{ID} reached destination {(DateTime.Now - _start).TotalSeconds}");
+                        lock (Program.finishedCountLock)
+                        {
+                            socket.Disconnect(false);
+                            Program.finishedCount++;
+                            Logger.HighlightMessage($"{ID} reached destination {(DateTime.Now - _start).TotalSeconds} [{Program.finishedCount}/{Program.clientCnt}]");
+                        }
                         return true;
                     }
 
                     _currentPos = answerPos;
                     
                     Thread.Sleep(RequestDelay);
-                        
+
+                    if (requestCount % MaxRequestPerNode == 0) // reconnect after MaxRequestPerNode inorder to rebalance 
+                    {
+                        requestCount = 1; 
+                        Logger.InfoMessage("MaxRequestPerNode reached, reconnecting");
+                        throw new SocketOverloadException();
+                    }
+
                     var message = $"Req:{ID}-[{_currentPos.X},{_currentPos.Y}]-[{_targetPos.X},{_targetPos.Y}];";
+                    requestCount++;
                     await SendTcp(socket, message);
                     Logger.InfoMessage(message);
                 }
@@ -169,8 +191,11 @@ public class Client
         }
         catch (SocketException)
         {
-            Logger.ErrorMessage($"Connection to {GetAddressFromRemoteEndpoint(socket)} lost");
             throw new SocketException();
+        }
+        catch (SocketOverloadException)
+        {
+            throw new SocketOverloadException();
         }
 
         return true;
@@ -193,4 +218,23 @@ public class Client
     }
 
     #endregion
+}
+
+public class SocketOverloadException : Exception
+{
+    public SocketOverloadException()
+    {
+
+    }
+
+    public SocketOverloadException(string message) : base(message)
+    {
+
+    }
+    public SocketOverloadException(string message, Exception inner ) : base(message, inner)
+    {
+
+    }
+    
+
 }

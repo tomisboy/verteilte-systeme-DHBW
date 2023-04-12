@@ -5,3 +5,7 @@ Client/Client/Client/obj/Debug/net7.0/Client.pdb
 
 
 bin/
+Client/Client/Client/obj/Debug/net7.0/Client.dll
+Client/Client/Client/obj/Debug/net7.0/Client.pdb
+ServerNode/ServerNode/ServerNode/obj/Debug/net7.0/ServerNode.dll
+ServerNode/ServerNode/ServerNode/obj/Debug/net7.0/ServerNode.pdb

@@ -14,10 +14,10 @@ namespace ServerNode
         private const int TimeToCheckResponse = 10;
         private const int OpenPort = 8888;
         
+        private static int secondsToShutdown = 30000;
         private static int _roundRobin;
         private static Object _roundRobinLock = new();
-
-
+        
         private static IPAddress _myIp = null!;
         private static List<string> _slaveIpList = null!;
         
@@ -28,6 +28,7 @@ namespace ServerNode
         const short maxAreaY = 1000;
         const short maxCarsPerNode = 2;
 
+        
         #endregion
         
         private static void Main()
@@ -46,7 +47,7 @@ namespace ServerNode
                 TryConnectToSocket(slave);
             
             // keep Program "secondsToShutdown" alive
-            var secondsToShutdown = 3000;
+
             while (true)
             {
                 Thread.Sleep(1000);
@@ -84,7 +85,7 @@ namespace ServerNode
                 var endPoint = new IPEndPoint(address, OpenPort);
 
                 socket.Bind(endPoint);
-                socket.Listen(100);
+                socket.Listen(1000);
 
                 Logger.InfoMessage($"Socket listening on {ipAddress}:{OpenPort}");
                 
