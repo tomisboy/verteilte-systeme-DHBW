@@ -17,7 +17,8 @@ namespace ServerNode
         private static int _roundRobin;
         private static Object _roundRobinLock = new();
 
-        private static readonly IPAddress _myIp = GetLocalIpAddress();
+
+        private static IPAddress _myIp;
         private static List<string> _slaveIpList;
         
         private static readonly List<Socket> _masterNodes = new (); // nodes which local node is connected to
@@ -34,8 +35,8 @@ namespace ServerNode
             Logger.IsLoggerEnabled = true;
             Logger.IsDebugEnabled = false;
             _slaveIpList = File.ReadAllLines("ips.txt").ToList();
-            
-            
+            _myIp = IPAddress.Parse(File.ReadAllLines("ownip.txt").ToList()[0]);
+
             LoadTrafficState(); //Load last traffic state or create new
             
             OpenSocket(_myIp.ToString());

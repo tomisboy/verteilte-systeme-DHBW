@@ -28,3 +28,5 @@ C:\Users\Thomas\GIT\verteilte-systeme-DHBW\ServerNode\ServerNode\ServerNode\obj\
 C:\Users\Thomas\GIT\verteilte-systeme-DHBW\ServerNode\ServerNode\ServerNode\obj\Debug\net7.0\ServerNode.pdb
 C:\Users\Thomas\GIT\verteilte-systeme-DHBW\ServerNode\ServerNode\ServerNode\obj\Debug\net7.0\ServerNode.genruntimeconfig.cache
 C:\Users\Thomas\GIT\verteilte-systeme-DHBW\ServerNode\ServerNode\ServerNode\obj\Debug\net7.0\ref\ServerNode.dll
+C:\Users\Thomas\GIT\verteilte-systeme-DHBW\ServerNode\ServerNode\ServerNode\bin\Debug\net7.0\ips.txt
+C:\Users\Thomas\GIT\verteilte-systeme-DHBW\ServerNode\ServerNode\ServerNode\bin\Debug\net7.0\ownip.txt
