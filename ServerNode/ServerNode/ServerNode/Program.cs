@@ -36,11 +36,11 @@ namespace ServerNode
             Logger.IsDebugEnabled = false;
             _slaveIpList = File.ReadAllLines("ips.txt").ToList();
             _myIp = IPAddress.Parse(File.ReadAllLines("ownip.txt").ToList()[0]);
-
+            
             LoadTrafficState(); //Load last traffic state or create new
             
             OpenSocket(_myIp.ToString());
-            
+            Logger.HighlightMessage($"Node {_myIp} online");
             
             foreach (var slave in _slaveIpList)
                 TryConnectToSocket(slave);
@@ -61,7 +61,7 @@ namespace ServerNode
 
         static Program()
         {
-            Logger.HighlightMessage($"Node {_myIp} online");
+            
             Console.WriteLine(_myIp);
             AppDomain.CurrentDomain.ProcessExit += StaticClass_Dtor;
         }
