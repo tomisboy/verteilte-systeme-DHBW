@@ -11,7 +11,7 @@
         {
             const int clientCnt = 100;
 
-            Logger.IsDebugEnabled = true;
+            Logger.IsDebugEnabled = false;
 
             SimulateClients(clientCnt);
 

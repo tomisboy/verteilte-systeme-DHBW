@@ -183,11 +183,13 @@ public class Client
 
     private static async Task SendTcp(Socket socket, string message)
     {
-        if (!socket.Connected)
-            throw new SocketException();
+
+            if (!socket.Connected)
+                throw new SocketException();
             
-        var messageBuffer = Encoding.ASCII.GetBytes($"{message}").ToArray();
-        await socket.SendAsync(messageBuffer);
+            var messageBuffer = Encoding.ASCII.GetBytes($"{message}").ToArray();
+            await socket.SendAsync(messageBuffer);
+
     }
 
     #endregion
