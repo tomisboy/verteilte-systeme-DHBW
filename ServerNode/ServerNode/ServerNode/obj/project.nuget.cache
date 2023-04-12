@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bQNv0z+p4/oXW76Fk7FPF1BrvEX+qEfaVYrGKDf6Hd/92PrfoO3K73os4dDHo/Ghqnfq+9T6dGXN0cj+AbNPWA==",
+  "dgSpecHash": "wbOSRv6i6bLAO0TYoYCMJPzb/Tzpuj/u6Ox4G8G4WtWom7+r5ZijDEUo7NbVQ0YDuFDH27wOVo5Z4t0NyQnyew==",
   "success": true,
-  "projectFilePath": "E:\\Uni\\Sem6\\VerteilteSysteme\\ServerNode\\ServerNode\\ServerNode.csproj",
+  "projectFilePath": "C:\\Users\\Thomas\\GIT\\verteilte-systeme-DHBW\\ServerNode\\ServerNode\\ServerNode\\ServerNode.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

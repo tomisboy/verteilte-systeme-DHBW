@@ -13,13 +13,12 @@ namespace ServerNode
 
         private const int TimeToCheckResponse = 10;
         private const int OpenPort = 8888;
-        private const string IpFamily = "192.168";
-
+        
         private static int _roundRobin;
         private static Object _roundRobinLock = new();
 
         private static readonly IPAddress _myIp = GetLocalIpAddress();
-        private static readonly List<string> _slaveIpList = new (){ $"{IpFamily}.2.154", $"{IpFamily}.2.155", $"{IpFamily}.2.156" };
+        private static List<string> _slaveIpList;
         
         private static readonly List<Socket> _masterNodes = new (); // nodes which local node is connected to
 
@@ -34,6 +33,8 @@ namespace ServerNode
         {
             Logger.IsLoggerEnabled = true;
             Logger.IsDebugEnabled = false;
+            _slaveIpList = File.ReadAllLines("../../../ips.txt").ToList();
+            
             
             LoadTrafficState(); //Load last traffic state or create new
             
@@ -376,7 +377,7 @@ namespace ServerNode
         {
             foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
             {
-                if (ip.ToString().Contains(IpFamily))
+                if (ip.AddressFamily == AddressFamily.InterNetwork && !ip.ToString().Contains("127.0.1.1") && !ip.ToString().Contains("0.0.0.0"))
                     return ip;
             }
             

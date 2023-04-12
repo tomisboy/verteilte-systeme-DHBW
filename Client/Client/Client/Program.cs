@@ -2,37 +2,36 @@
 {
     internal abstract class Program
     {
-        private const string IpFamily = "192.168";
-        
+        private const int ClientStartDelay = 100;
+
         const short maxAreaX = 1000;
         const short maxAreaY = 1000;
 
         private static void Main(string[] args)
         {
-            const int clientCnt = 1;
+            const int clientCnt = 3;
 
-            Logger.IsDebugEnabled = false;
+            Logger.IsDebugEnabled = true;
 
-            SimulateClients(clientCnt).GetAwaiter().GetResult();
-
+            SimulateClients(clientCnt);
+            _slaveIpList = File.ReadAllLines("../../../ips.txt").ToList();
             Console.ReadLine();
         }
 
         #region Private Methods
-        
-        private static async Task SimulateClients(int count)
-        {
-            var clients = new List<Client>();
 
+        private static void SimulateClients(int count)
+        {
             for (var i = 0; i < count; i++)
             {
                 var client = new Client(maxAreaX, maxAreaY, i);
-                clients.Add(client);
-            }
 
-            await Task.WhenAll(clients.Select(c => Task.Run(() => c.BeginCommunication())));
+                Task.Run(() => client.BeginCommunication());
+
+                Thread.Sleep(ClientStartDelay);
+            }
         }
         #endregion
-        
+
     }
 }

@@ -9,13 +9,13 @@ public class Client
 {
     #region Fields
     
-    private const int RequestDelay = 100;
+    private const int RequestDelay = 10;
 
     private const int TimeToCheckResponse = 10;
-    private const int TimeToCheckServer = 100;
+    private const int TimeToCheckServer = 1000;
     
-    private const string IpFamily = "192.168";
-    private static readonly List<string> _serverIps = new (){ $"{IpFamily}.2.154", $"{IpFamily}.2.155", $"{IpFamily}.2.156" };
+    //private const string IpFamily = "192.168";
+        private static List<string> _slaveIpList;
     private const int OpenPort = 8888;
 
     private Coordinate _currentPos;
@@ -49,15 +49,27 @@ public class Client
     {
         var ipTarget = 0;
 
-        var res = await ConnectToServer(_serverIps[ipTarget], false);
+        var res = false;
         
         while (!res)
         {
-            Thread.Sleep(TimeToCheckServer);
-            
-            ipTarget++;
-            
-            res = await ConnectToServer(_serverIps[ipTarget], false);
+            try
+            {
+                Logger.InfoMessage(_serverIps[ipTarget]);
+                
+                if (ipTarget >= _serverIps.Count - 1)
+                    ipTarget = 0;
+                else
+                    ipTarget++;
+                
+                res = await ConnectToServer(_serverIps[ipTarget], false);
+                
+                Thread.Sleep(TimeToCheckServer);
+            }
+            catch
+            {
+                res = false;
+            }
         }
     }
 
@@ -83,7 +95,7 @@ public class Client
         catch
         {
             Logger.ErrorMessage($"Can't connect to {ip} lost");
-            return false;
+            throw new SocketException();
         }
     }
 
@@ -158,7 +170,7 @@ public class Client
         catch (SocketException)
         {
             Logger.ErrorMessage($"Connection to {GetAddressFromRemoteEndpoint(socket)} lost");
-            return false;
+            throw new SocketException();
         }
 
         return true;
