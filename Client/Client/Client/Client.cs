@@ -36,7 +36,7 @@ public class Client
         var r = new Random();
         
         _start = DateTime.Now;
-        _serverIps = File.ReadAllLines("../../../ips.txt").ToList();
+        _serverIps = File.ReadAllLines("ips.txt").ToList();
         _currentPos = new Coordinate((short) r.Next(maxX), (short) r.Next(maxY));
         _targetPos = new Coordinate((short) r.Next(maxX), (short) r.Next(maxY));
 
