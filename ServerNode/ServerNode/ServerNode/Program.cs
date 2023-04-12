@@ -18,8 +18,8 @@ namespace ServerNode
         private static Object _roundRobinLock = new();
 
 
-        private static IPAddress _myIp ;
-        private static List<string> _slaveIpList;
+        private static IPAddress _myIp = null!;
+        private static List<string> _slaveIpList = null!;
         
         private static readonly List<Socket> _masterNodes = new (); // nodes which local node is connected to
 
