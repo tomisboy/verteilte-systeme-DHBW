@@ -369,11 +369,18 @@ namespace ServerNode
 
         private static async void SendTcp(Socket socket, string message)
         {
-            if (!socket.Connected)
-                throw new SocketException();
-            
-            var messageBuffer = Encoding.ASCII.GetBytes($"{message}").ToArray();
-            await socket.SendAsync(messageBuffer);
+            try
+            {
+                if (!socket.Connected)
+                    throw new SocketException();
+                
+                var messageBuffer = Encoding.ASCII.GetBytes($"{message}").ToArray();
+                await socket.SendAsync(messageBuffer);
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private static IPAddress GetLocalIpAddress()

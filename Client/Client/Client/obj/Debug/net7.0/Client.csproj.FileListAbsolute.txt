@@ -28,3 +28,4 @@ C:\Users\Thomas\GIT\verteilte-systeme-DHBW\Client\Client\Client\obj\Debug\net7.0
 C:\Users\Thomas\GIT\verteilte-systeme-DHBW\Client\Client\Client\obj\Debug\net7.0\Client.pdb
 C:\Users\Thomas\GIT\verteilte-systeme-DHBW\Client\Client\Client\obj\Debug\net7.0\Client.genruntimeconfig.cache
 C:\Users\Thomas\GIT\verteilte-systeme-DHBW\Client\Client\Client\obj\Debug\net7.0\ref\Client.dll
+C:\Users\Thomas\GIT\verteilte-systeme-DHBW\Client\Client\Client\bin\Debug\net7.0\ips.txt

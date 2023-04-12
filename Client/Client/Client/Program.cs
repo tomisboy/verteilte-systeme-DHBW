@@ -9,9 +9,9 @@
 
         private static void Main(string[] args)
         {
-            const int clientCnt = 3;
+            const int clientCnt = 100;
 
-            Logger.IsDebugEnabled = false;
+            Logger.IsDebugEnabled = true;
 
             SimulateClients(clientCnt);
 
