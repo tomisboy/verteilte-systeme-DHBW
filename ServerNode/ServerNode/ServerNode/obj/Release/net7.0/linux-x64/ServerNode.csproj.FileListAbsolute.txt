@@ -1,0 +1,15 @@
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\bin\Release\net7.0\linux-x64\ServerNode
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\bin\Release\net7.0\linux-x64\ServerNode.deps.json
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\bin\Release\net7.0\linux-x64\ServerNode.runtimeconfig.json
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\bin\Release\net7.0\linux-x64\ServerNode.dll
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\bin\Release\net7.0\linux-x64\ServerNode.pdb
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Release\net7.0\linux-x64\ServerNode.csproj.AssemblyReference.cache
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Release\net7.0\linux-x64\ServerNode.GeneratedMSBuildEditorConfig.editorconfig
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Release\net7.0\linux-x64\ServerNode.AssemblyInfoInputs.cache
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Release\net7.0\linux-x64\ServerNode.AssemblyInfo.cs
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Release\net7.0\linux-x64\ServerNode.csproj.CoreCompileInputs.cache
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Release\net7.0\linux-x64\ServerNode.dll
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Release\net7.0\linux-x64\refint\ServerNode.dll
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Release\net7.0\linux-x64\ServerNode.pdb
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Release\net7.0\linux-x64\ServerNode.genruntimeconfig.cache
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Release\net7.0\linux-x64\ref\ServerNode.dll

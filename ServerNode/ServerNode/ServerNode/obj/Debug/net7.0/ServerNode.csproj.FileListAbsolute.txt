@@ -1,0 +1,15 @@
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\bin\Debug\net7.0\ServerNode.exe
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\bin\Debug\net7.0\ServerNode.deps.json
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\bin\Debug\net7.0\ServerNode.runtimeconfig.json
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\bin\Debug\net7.0\ServerNode.dll
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\bin\Debug\net7.0\ServerNode.pdb
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Debug\net7.0\ServerNode.csproj.AssemblyReference.cache
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Debug\net7.0\ServerNode.GeneratedMSBuildEditorConfig.editorconfig
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Debug\net7.0\ServerNode.AssemblyInfoInputs.cache
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Debug\net7.0\ServerNode.AssemblyInfo.cs
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Debug\net7.0\ServerNode.csproj.CoreCompileInputs.cache
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Debug\net7.0\ServerNode.dll
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Debug\net7.0\refint\ServerNode.dll
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Debug\net7.0\ServerNode.pdb
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Debug\net7.0\ServerNode.genruntimeconfig.cache
+E:\Uni\Sem6\VerteilteSysteme\ServerNode\ServerNode\obj\Debug\net7.0\ref\ServerNode.dll
