@@ -33,7 +33,7 @@ namespace ServerNode
         {
             Logger.IsLoggerEnabled = true;
             Logger.IsDebugEnabled = false;
-            _slaveIpList = File.ReadAllLines("../../../ips.txt").ToList();
+            _slaveIpList = File.ReadAllLines("ips.txt").ToList();
             
             
             LoadTrafficState(); //Load last traffic state or create new

@@ -11,10 +11,10 @@
         {
             const int clientCnt = 3;
 
-            Logger.IsDebugEnabled = true;
+            Logger.IsDebugEnabled = false;
 
             SimulateClients(clientCnt);
-            _slaveIpList = File.ReadAllLines("../../../ips.txt").ToList();
+
             Console.ReadLine();
         }
 

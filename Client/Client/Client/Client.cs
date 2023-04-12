@@ -9,13 +9,15 @@ public class Client
 {
     #region Fields
     
-    private const int RequestDelay = 10;
+    private const int RequestDelay = 1000;
 
     private const int TimeToCheckResponse = 10;
-    private const int TimeToCheckServer = 1000;
+    private const int TimeToCheckServer = 100;
     
-    //private const string IpFamily = "192.168";
-        private static List<string> _slaveIpList;
+    private const string IpFamily = "192.168";
+    private static List<string> _serverIps;
+    
+    // private static readonly List<string> _serverIps = new (){ $"{IpFamily}.2.154", $"{IpFamily}.2.155", $"{IpFamily}.2.156" };
     private const int OpenPort = 8888;
 
     private Coordinate _currentPos;
@@ -34,7 +36,7 @@ public class Client
         var r = new Random();
         
         _start = DateTime.Now;
-
+        _serverIps = File.ReadAllLines("../../../ips.txt").ToList();
         _currentPos = new Coordinate((short) r.Next(maxX), (short) r.Next(maxY));
         _targetPos = new Coordinate((short) r.Next(maxX), (short) r.Next(maxY));
 
