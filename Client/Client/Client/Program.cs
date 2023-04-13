@@ -3,48 +3,45 @@
     internal abstract class Program
     {
         private const int ClientStartDelay = 1000;
-        private static int secondsToShutdown = 9999999;
+        private static int _minutesToShutdown = 600;
         
-
-        public const short maxAreaX = 1000;
-        public const short maxAreaY = 1000;
-        public const int clientCnt = 1000;
-
+        private static short _maxAreaX = 1000;
+        private static short _maxAreaY = 1000;
+        public static short ClientCnt = 1000;
         
-        public static Random random = new(0); 
-        public static int finishedCount = 0;
-        public static object finishedCountLock = new();
+        public static int FinishedCount = 0;
+        
+        public static readonly Random Random = new(0); 
+        public static readonly object FinishedCountLock = new();
         
         private static void Main(string[] args)
         {
             Logger.IsDebugEnabled = false;
-
-            SimulateClients(clientCnt);
-
-            while (true)
+            
+            var areaConfig = File.ReadAllLines("config/area.txt").ToList();
+            _maxAreaX = short.Parse(areaConfig[0]);
+            _maxAreaY = short.Parse(areaConfig[1]);
+            ClientCnt = short.Parse(areaConfig[1]);
+            
+            // start clients
+            for (var i = 0; i < ClientCnt; i++)
             {
-                Thread.Sleep(100000);
-                secondsToShutdown--;
-
-                if (secondsToShutdown == 0)
-                    break;
-            }
-        }
-
-        #region Private Methods
-
-        private static void SimulateClients(int count)
-        {
-            for (var i = 0; i < count; i++)
-            {
-                var client = new Client(maxAreaX, maxAreaY, i);
+                var client = new Client(_maxAreaX, _maxAreaY, i);
 
                 Task.Run(() => client.BeginCommunication());
 
                 Thread.Sleep(ClientStartDelay);
             }
-        }
-        #endregion
 
+            // keep Program "minutesToShutdown" alive
+            while (true)
+            {
+                Thread.Sleep(60000);
+                _minutesToShutdown--;
+
+                if (_minutesToShutdown == 0)
+                    break;
+            }
+        }
     }
 }
