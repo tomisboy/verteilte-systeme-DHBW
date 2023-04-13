@@ -14,31 +14,25 @@ namespace ServerNode
         private const int TimeToCheckResponse = 10;
         private const int OpenPort = 8888;
         
-        private static int secondsToShutdown = 30000;
+        private static int _minutesToShutdown = 600;
         private static int _roundRobin;
-        private static Object _roundRobinLock = new();
+        
+        private static short _maxAreaX;
+        private static short _maxAreaY;
+        private static short _maxCarsPerNode;
         
         private static IPAddress _myIp = null!;
         private static List<string> _slaveIpList = null!;
         
+        private static readonly object _roundRobinLock = new(); // semaphore for round robin calculation
         private static readonly List<Socket> _masterNodes = new (); // nodes which local node is connected to
 
         private static TrafficControlLogic _trafficControlLogic = null!;
-        const short maxAreaX = 1000;
-        const short maxAreaY = 1000;
-        const short maxCarsPerNode = 2;
 
-        
         #endregion
-        
         private static void Main()
         {
-            Logger.IsLoggerEnabled = true;
-            Logger.IsDebugEnabled = false;
-            _slaveIpList = File.ReadAllLines("ips.txt").ToList();
-            _myIp = IPAddress.Parse(File.ReadAllLines("ownip.txt").ToList()[0]);
-            
-            LoadTrafficState(); //Load last traffic state or create new
+            InitNodeConfig(); // initialize important node variables
             
             OpenSocket(_myIp.ToString());
             Logger.HighlightMessage($"Node {_myIp} online");
@@ -46,14 +40,13 @@ namespace ServerNode
             foreach (var slave in _slaveIpList)
                 TryConnectToSocket(slave);
             
-            // keep Program "secondsToShutdown" alive
-
+            // keep Program "minutesToShutdown" alive
             while (true)
             {
-                Thread.Sleep(1000);
-                secondsToShutdown--;
+                Thread.Sleep(60000);
+                _minutesToShutdown--;
 
-                if (secondsToShutdown == 0)
+                if (_minutesToShutdown == 0)
                     break;
             }
         }
@@ -62,7 +55,6 @@ namespace ServerNode
 
         static Program()
         {
-            
             Console.WriteLine(_myIp);
             AppDomain.CurrentDomain.ProcessExit += StaticClass_Dtor;
         }
@@ -75,10 +67,32 @@ namespace ServerNode
         #endregion
 
         #region Private Methods
+
+        private static void InitNodeConfig()
+        {
+            Logger.IsLoggerEnabled = true;
+            Logger.IsDebugEnabled = false;
+            
+            _slaveIpList = File.ReadAllLines("config/ips.txt").ToList();
+            _myIp = IPAddress.Parse(File.ReadAllLines("config/ownip.txt").ToList()[0]);
+            
+            var areaConfig = File.ReadAllLines("config/area.txt").ToList();
+
+            _maxAreaX = short.Parse(areaConfig[0]);
+            _maxAreaY = short.Parse(areaConfig[1]);
+            _maxCarsPerNode = short.Parse(areaConfig[2]);
+            
+            _trafficControlLogic = new TrafficControlLogic(new TrafficArea(_maxCarsPerNode, _maxAreaX, _maxAreaY));
+        }
+        
+        /// <summary>
+        /// Opens a new socket connection on given IPAddress
+        /// </summary>
         private static void OpenSocket(string ipAddress)
         {
             try
             {
+                //open socket on own IpAddress
                 var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 
                 var address = IPAddress.Parse(ipAddress);
@@ -90,69 +104,81 @@ namespace ServerNode
                 Logger.InfoMessage($"Socket listening on {ipAddress}:{OpenPort}");
                 
                 // Spawn a new thread to handle each incoming connection
-                Task.Run(() =>
-                {
-                    while (true)
-                    {
-                        var clientSocket = socket.Accept();
-                        var ip = GetAddressFromRemoteEndpoint(clientSocket);
-
-                        // Client connected to socket
-                        if (!_slaveIpList.Contains(ip))
-                        {
-                            Task.Run(() => ListenToClientSocket(clientSocket));
-                            continue;
-                        }
-                        
-                        Logger.InfoMessage($"Slave connected: {clientSocket.RemoteEndPoint}");
-
-                        //listen to client on own socket
-                        Task.Run(() => ListenToSocket(clientSocket));
-                        
-                        // connect to slaves own socket
-                        lock (_masterNodes)
-                        {
-                            if (_masterNodes.Exists(s => GetAddressFromRemoteEndpoint(s) == GetAddressFromRemoteEndpoint(clientSocket)))
-                                continue;
-                            
-                            Task.Run(() => TryConnectToSocket(GetAddressFromRemoteEndpoint(clientSocket)));
-                        }
-                    }
-                });
+                Task.Run(() => HandleIncomingConnections(socket));
             }
             catch (Exception e)
             {
                 Logger.ErrorMessage(e.Message);
             }
         }
-        
-        private static void TryConnectToSocket(string ip)
+
+        /// <summary>
+        /// Handles incoming connections from given socket. (Method runs as long as node is alive)
+        /// </summary>
+        private static void HandleIncomingConnections(Socket socket)
         {
-            if (ip == _myIp.ToString())
+            while (true)
+            {
+                // accept new incoming connections
+                var clientSocket = socket.Accept();
+                var ip = GetAddressFromRemoteEndpoint(clientSocket);
+
+                // Client connected to socket
+                if (!_slaveIpList.Contains(ip))
+                {
+                    Task.Run(() => ListenToClientSocket(clientSocket));
+                    continue;
+                }
+                        
+                Logger.InfoMessage($"Slave connected: {clientSocket.RemoteEndPoint}");
+
+                //listen to client on own socket
+                Task.Run(() => ListenToNodeSocket(clientSocket));
+                        
+                // connect to slaves own socket
+                lock (_masterNodes)
+                {
+                    if (_masterNodes.Exists(s => GetAddressFromRemoteEndpoint(s) == GetAddressFromRemoteEndpoint(clientSocket)))
+                        continue;
+                            
+                    Task.Run(() => TryConnectToSocket(GetAddressFromRemoteEndpoint(clientSocket)));
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Try connect to a given socket from remoteIp
+        /// </summary>
+        private static void TryConnectToSocket(string remoteIp)
+        {
+            if (remoteIp == _myIp.ToString())
                 return;
             
             try
             {
                 var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                var address = IPAddress.Parse(ip);
+                var address = IPAddress.Parse(remoteIp);
                 var endPoint = new IPEndPoint(address, OpenPort);
             
                 socket.Connect(endPoint);
             
                 Logger.InfoMessage($"Connected to master: {socket.RemoteEndPoint}");
                 
-                Task.Run(() => ListenToSocket(socket));
+                Task.Run(() => ListenToNodeSocket(socket));
 
                 lock(_masterNodes)
                     _masterNodes.Add(socket);
             }
             catch (Exception)
             {
-                Logger.ErrorMessage($"Could not connect to: {ip}");
+                Logger.ErrorMessage($"Could not connect to: {remoteIp}");
             }
         }
         
-        private static async Task ListenToSocket(Socket socket)
+        /// <summary>
+        /// Listens to all incoming messages from a node socket.
+        /// </summary>
+        private static async Task ListenToNodeSocket(Socket socket)
         {
             try
             {
@@ -165,30 +191,10 @@ namespace ServerNode
                     var receivedData = Encoding.ASCII.GetString(buffer, 0, bytesRead);
 
                     sb.Append(receivedData);
-                    
-                    if (receivedData.Contains("Change"))
-                    {
-                        var parts = receivedData.Split(new char[] { ':', '-', '[', ']', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-                        var id = short.Parse(parts[1]);
-                        var newPosParts = parts[2].Split(',');
-                        var newPos = new Coordinate(short.Parse(newPosParts[0]), short.Parse(newPosParts[1]));
-                        
-                        lock (_trafficControlLogic)
-                        {
-                            var pos = _trafficControlLogic.TrafficArea.GetPosition(id);
-                            
-                            if(pos == null) // add if new car
-                                _trafficControlLogic.TrafficArea.Place(id, newPos);
-                            else if (pos != newPos) // update pos if old car
-                            {
-                                _trafficControlLogic.TrafficArea.Remove(id, pos);
-                                _trafficControlLogic.TrafficArea.Place(id, newPos);
-                            }
-                        }
-                    }
+                    HandleNodeRequest(receivedData); // handle incoming node request
                     
-                    if (sb.Length > 0)
+                    if (sb.Length > 0) // Log incoming message
                     {
                         Logger.TcpInMessage(sb.ToString());
                         sb.Clear();
@@ -197,7 +203,7 @@ namespace ServerNode
                     {
                         await Task.Delay(TimeToCheckResponse);
                         
-                        // connection lost
+                        // check if connection lost
                         var testBuffer = new byte[1];
                         if (socket.Poll(0, SelectMode.SelectRead) && socket.Receive(testBuffer, SocketFlags.Peek) == 0)
                             throw new SocketException();
@@ -213,6 +219,9 @@ namespace ServerNode
             }
         }
 
+        /// <summary>
+        /// Listens to all incoming messages from a client socket.
+        /// </summary>
         private static async void ListenToClientSocket(Socket socket)
         {
             try
@@ -229,39 +238,10 @@ namespace ServerNode
 
                     sb.Append(receivedData);
                     
-                    if (receivedData.Contains("Help")) // Client asks for navigation
-                    {
-                        var rr = GetNextRoundRobinId();
-                        
-                        if (_slaveIpList[rr] == _myIp.ToString())
-                                SendTcp(socket, "Accepted");
-                        else
-                        {
-                            SendTcp(socket, $"{_slaveIpList[rr]}");
-                            Logger.InfoMessage($"Connection with {GetAddressFromRemoteEndpoint(socket)} ended.");
-                            break;
-                        }
-                    }
-                    else if (receivedData.Contains("Sudo help")) // Client demands navigation
-                    {
-                        SendTcp(socket, "Accepted");
-                    }
-                    else if (receivedData.Contains("Req")) // Client requests next step
-                    {
-                        var newPos = CalculateMove(receivedData);
-                        
-                        var id = short.Parse(receivedData.Split(new[] { ':', '-', '[', ']', ';' }, StringSplitOptions.RemoveEmptyEntries)[1]);
-                        
-                        var messageToNodes = $"Change:{id}-[{newPos.X},{newPos.Y}];";
-                        var messageToClient = $"Asw:[{newPos.X},{newPos.Y}];";
-                        
-                        SendTcp(socket, messageToClient);
-                        SendChangeToNodes(messageToNodes);
-                        
-                        Logger.InfoMessage(messageToClient);
-                    }
+                    if(!HandleClientRequest(socket, receivedData)) // handle incoming client request
+                        break;
 
-                    if (sb.Length > 0)
+                    if (sb.Length > 0) // Log incoming message
                     {
                         Logger.TcpInMessage(sb.ToString());
                         sb.Clear();
@@ -270,7 +250,7 @@ namespace ServerNode
                     {
                         await Task.Delay(TimeToCheckResponse);
                         
-                        // connection lost
+                        // check if connection lost
                         var testBuffer = new byte[1];
                         if (socket.Poll(0, SelectMode.SelectRead) && socket.Receive(testBuffer, SocketFlags.Peek) == 0)
                             throw new SocketException();
@@ -283,9 +263,11 @@ namespace ServerNode
             }
         }
 
+        /// <summary>
+        /// Calculates next move for a navigation request and updates TrafficControlLogic.
+        /// </summary>
         private static Coordinate CalculateMove(string request)
         {
-            Coordinate nextMove;
             var parts = request.Split(new[] { ':', '-', '[', ']', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
             var id = short.Parse(parts[1]);
@@ -297,6 +279,7 @@ namespace ServerNode
             
             try
             {
+                Coordinate nextMove;
                 lock (_trafficControlLogic)
                 {
                     var pos = _trafficControlLogic.TrafficArea.GetPosition(id);
@@ -319,13 +302,86 @@ namespace ServerNode
                 return fromPos;
             }
         }
+        
+        /// <summary>
+        /// Handles incoming Node Requests. Updates TrafficControlLogic with given data.
+        /// </summary>
+        private static void HandleNodeRequest(string data)
+        {
+            if (!data.Contains("Change"))
+                return;
+            
+            var parts = data.Split(new[] { ':', '-', '[', ']', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-        private static int GetNextRoundRobinId()
+            var id = short.Parse(parts[1]);
+            var newPosParts = parts[2].Split(',');
+            var newPos = new Coordinate(short.Parse(newPosParts[0]), short.Parse(newPosParts[1]));
+                        
+            lock (_trafficControlLogic)
+            {
+                var pos = _trafficControlLogic.TrafficArea.GetPosition(id);
+                            
+                if(pos == null) // add if new car
+                    _trafficControlLogic.TrafficArea.Place(id, newPos);
+                else if (pos != newPos) // update pos if old car
+                {
+                    _trafficControlLogic.TrafficArea.Remove(id, pos);
+                    _trafficControlLogic.TrafficArea.Place(id, newPos);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Handles incoming Client Requests. Updates TrafficControlLogic with given data.
+        /// </summary>
+        private static bool HandleClientRequest(Socket socket, string data)
+        {
+            if (data.Contains("Help")) // Client asks for navigation
+            {
+                var roundRobinIp = GetNextRoundRobinIp();
+                
+                //check with round robin who should handle request
+                if (roundRobinIp == _myIp.ToString()) 
+                    SendTcp(socket, "Accepted");
+                else
+                {
+                    SendTcp(socket, $"{roundRobinIp}");
+                    Logger.InfoMessage($"Connection with {GetAddressFromRemoteEndpoint(socket)} ended.");
+                    return false;
+                }
+            }
+            else if (data.Contains("Sudo help")) // Client demands navigation
+            {
+                SendTcp(socket, "Accepted");
+            }
+            else if (data.Contains("Req")) // Client requests next step
+            {
+                var newPos = CalculateMove(data);
+                        
+                var id = short.Parse(data.Split(new[] { ':', '-', '[', ']', ';' }, StringSplitOptions.RemoveEmptyEntries)[1]);
+                        
+                var messageToNodes = $"Change:{id}-[{newPos.X},{newPos.Y}];";
+                var messageToClient = $"Asw:[{newPos.X},{newPos.Y}];";
+                        
+                SendTcp(socket, messageToClient);
+                SendChangeToNodes(messageToNodes);
+                        
+                Logger.InfoMessage(messageToClient);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns IP for next node to handle requests.
+        /// </summary>
+        private static string GetNextRoundRobinIp()
         {
             lock (_roundRobinLock)
             {
                 while (true)
                 {
+                    //increment counter
                     if (_roundRobin >= _slaveIpList.Count - 1)
                         _roundRobin = 0;
                     else
@@ -333,23 +389,21 @@ namespace ServerNode
                 
                     lock (_masterNodes)
                     {
+                        // check if own ip
                         if (_slaveIpList[_roundRobin] == _myIp.ToString())
-                            return _roundRobin;
+                            return _slaveIpList[_roundRobin];
                         
-                        if (_masterNodes.Exists(s =>
-                                GetAddressFromRemoteEndpoint(s) == _slaveIpList[_roundRobin]))
-                            return _roundRobin;
+                        // check if next node is online
+                        if (_masterNodes.Exists(s => GetAddressFromRemoteEndpoint(s) == _slaveIpList[_roundRobin]))
+                            return _slaveIpList[_roundRobin];
                     }
                 }
             }
         }
-
-        private static void LoadTrafficState()
-        {
-            //_trafficControlLogic = new TrafficControlLogic(LoadTrafficAreaState());
-            _trafficControlLogic = new TrafficControlLogic(new TrafficArea(maxCarsPerNode, maxAreaX, maxAreaY));
-        }
         
+        /// <summary>
+        /// Sends message to all connected nodes.
+        /// </summary>
         private static void SendChangeToNodes(string message)
         {
             lock (_masterNodes)
@@ -368,6 +422,9 @@ namespace ServerNode
             }
         }
 
+        /// <summary>
+        /// Sends message on specific socket.
+        /// </summary>
         private static async void SendTcp(Socket socket, string message)
         {
             try
@@ -384,20 +441,12 @@ namespace ServerNode
             }
         }
 
-        private static IPAddress GetLocalIpAddress()
-        {
-            foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork && !ip.ToString().Contains("127.0.1.1") && !ip.ToString().Contains("0.0.0.0"))
-                    return ip;
-            }
-            
-            throw new Exception("No network adapters with an IPv4 address in the system!");
-        }
-        
+        /// <summary>
+        /// Returns IP address from remoteEndpoint without Port.
+        /// </summary>
         private static string GetAddressFromRemoteEndpoint(Socket socket)
         {
-            return ((IPEndPoint) (socket.RemoteEndPoint!)).Address.ToString();
+            return ((IPEndPoint) socket.RemoteEndPoint!).Address.ToString();
         }
 
         #endregion

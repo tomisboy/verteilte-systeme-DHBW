@@ -1,6 +1,6 @@
 ﻿namespace ServerNode;
 
-public class Logger
+public abstract class Logger
 {
     #region Fields
     
