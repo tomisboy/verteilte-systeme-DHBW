@@ -16,9 +16,9 @@
         
         private static void Main(string[] args)
         {
-            Logger.IsDebugEnabled = false;
+            Logger.IsDebugEnabled = true;
             
-            var areaConfig = File.ReadAllLines("config/area.txt").ToList();
+            var areaConfig = File.ReadAllLines("config/config.txt").ToList();
             _maxAreaX = short.Parse(areaConfig[0]);
             _maxAreaY = short.Parse(areaConfig[1]);
             ClientCnt = short.Parse(areaConfig[1]);
