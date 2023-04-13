@@ -10,7 +10,8 @@ public class Client
     #region Fields
     
     private const int RequestDelay = 20;
-    private const int MaxRequestPerNode = Program.maxAreaX / 3;
+    //private const int MaxRequestPerNode = Program.maxAreaX / 3;
+    private const int MaxRequestPerNode = 10000;
 
     private const int TimeToCheckResponse = 10;
     private const int TimeToCheckServer = 100;
@@ -33,10 +34,11 @@ public class Client
 
     public Client(short maxX, short maxY, int id)
     {
+        _start = DateTime.Now;
         lock (Program.random)
         {
            var r = Program.random; 
-           _start = DateTime.Now;
+           
            _serverIps = File.ReadAllLines("ips.txt").ToList();
            _currentPos = new Coordinate((short) r.Next(maxX), (short) r.Next(maxY));
            _targetPos = new Coordinate((short) r.Next(maxX), (short) r.Next(maxY));

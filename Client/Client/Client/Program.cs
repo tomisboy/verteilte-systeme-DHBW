@@ -8,7 +8,7 @@
 
         public const short maxAreaX = 1000;
         public const short maxAreaY = 1000;
-        public const int clientCnt = 100;
+        public const int clientCnt = 1000;
 
         
         public static Random random = new(0); 
@@ -23,7 +23,7 @@
 
             while (true)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(100000);
                 secondsToShutdown--;
 
                 if (secondsToShutdown == 0)
