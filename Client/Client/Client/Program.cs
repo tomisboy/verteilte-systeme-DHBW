@@ -5,9 +5,9 @@
         private const int ClientStartDelay = 1000;
         private static int _minutesToShutdown = 600;
         
-        private static short _maxAreaX = 1000;
-        private static short _maxAreaY = 1000;
-        public static short ClientCnt = 1000;
+        private static short _maxAreaX ;
+        private static short _maxAreaY ;
+        public static short ClientCnt ;
         
         public static int FinishedCount = 0;
         
@@ -21,7 +21,7 @@
             var areaConfig = File.ReadAllLines("config/config.txt").ToList();
             _maxAreaX = short.Parse(areaConfig[0]);
             _maxAreaY = short.Parse(areaConfig[1]);
-            ClientCnt = short.Parse(areaConfig[1]);
+            ClientCnt = short.Parse(areaConfig[2]);
             
             // start clients
             for (var i = 0; i < ClientCnt; i++)
@@ -36,7 +36,7 @@
             // keep Program "minutesToShutdown" alive
             while (true)
             {
-                Thread.Sleep(60000);
+                Thread.Sleep(1000);
                 _minutesToShutdown--;
 
                 if (_minutesToShutdown == 0)

@@ -28,3 +28,5 @@ ServerNode/ServerNode/.idea/
 Client/Client/.idea/
 release
 release/
+Client/Client/Client/obj/
+ServerNode/ServerNode/ServerNode/obj

@@ -43,7 +43,7 @@ namespace ServerNode
             // keep Program "minutesToShutdown" alive
             while (true)
             {
-                Thread.Sleep(60000);
+                Thread.Sleep(1000);
                 _minutesToShutdown--;
 
                 if (_minutesToShutdown == 0)
@@ -132,7 +132,7 @@ namespace ServerNode
                         
                 Logger.InfoMessage($"Slave connected: {clientSocket.RemoteEndPoint}");
 
-                //listen to client on own socket
+                //listen to other node on own socket
                 Task.Run(() => ListenToNodeSocket(clientSocket));
                         
                 // connect to slaves own socket
