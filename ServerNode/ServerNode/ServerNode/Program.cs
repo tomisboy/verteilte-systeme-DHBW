@@ -43,7 +43,7 @@ namespace ServerNode
             // keep Program "minutesToShutdown" alive
             while (true)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(60000);
                 _minutesToShutdown--;
 
                 if (_minutesToShutdown == 0)
