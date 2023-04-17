@@ -171,7 +171,7 @@ public class Client
                 if (_requestCount % MaxRequestPerNode == 0) // reconnect after MaxRequestPerNode inorder to rebalance 
                 {
                     _requestCount = 1; 
-                    Logger.HighlightMessage("MaxRequestPerNode reached, reconnecting ${_id}"  );
+                    Logger.HighlightMessage($"MaxRequestPerNode reached, reconnecting {_id}");
                     throw new SocketOverloadException();
                 }
 
