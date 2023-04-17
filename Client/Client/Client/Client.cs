@@ -12,7 +12,7 @@ public class Client
     private int _requestCount = 1;
     
     private const int RequestDelay = 20;
-    private const int MaxRequestPerNode = 10000;
+    private static readonly int MaxRequestPerNode = (Program._maxAreaX +  Program._maxAreaY) / (3*2); //make it dependent on field size
 
     private const int TimeToCheckResponse = 10;
     private const int TimeToCheckServer = 100;

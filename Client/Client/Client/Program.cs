@@ -5,8 +5,8 @@
         private const int ClientStartDelay = 1000;
         private static int _minutesToShutdown = 600;
         
-        private static short _maxAreaX ;
-        private static short _maxAreaY ;
+        public static short _maxAreaX ;
+        public static short _maxAreaY ;
         public static short ClientCnt ;
         
         public static int FinishedCount = 0;
